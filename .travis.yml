@@ -5,15 +5,14 @@ cache:
   directories:
   - "$HOME/google-cloud-sdk/"
 
+# build fat executable single jar
+# to run it execute: java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
+script: mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate allure-results/
 
 deploy:
   provider: gae
   keyfile: super_secret.txt
   project: test-gce-prjct
-
-  default: true
-      on:
-          all_branches: true
 
   before_install:
   # If the SDK is not already cached, download it and unpack it
@@ -26,6 +25,3 @@ deploy:
   # Skip cleanup so api_key.py and vendored dependencies are still there
   skip_cleanup: true
 
-#build fat executable single jar
-# to rubn it execute: java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
-script: mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate allure-results/
