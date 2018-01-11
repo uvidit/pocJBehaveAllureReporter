@@ -1,1 +1,31 @@
 language: java
+sudo: false
+# Cache our Gcloud SDK between commands
+cache:
+  directories:
+  - "$HOME/google-cloud-sdk/"
+
+
+deploy:
+  provider: gae
+  keyfile: super_secret.txt
+  project: test-gce-prjct
+
+  default: true
+      on:
+          all_branches: true
+
+  before_install:
+  # If the SDK is not already cached, download it and unpack it
+  - if [ ! -d ${HOME}/google-cloud-sdk ]; then
+       curl https://sdk.cloud.google.com | bash;
+    fi
+  # Decrypt the credentials we added to the repo using the key we added with the Travis command line tool
+  - openssl aes-256-cbc -K $encrypted_c5904ac432bd_key -iv $encrypted_c5904ac432bd_iv
+    -in super_secret.txt.enc -out super_secret.txt -d
+  # Skip cleanup so api_key.py and vendored dependencies are still there
+  skip_cleanup: true
+
+#build fat executable single jar
+# to rubn it execute: java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
+script: mvn clean package && java -jar travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate allure-results/
