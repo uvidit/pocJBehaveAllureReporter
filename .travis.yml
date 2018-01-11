@@ -28,4 +28,4 @@ deploy:
 
 #build fat executable single jar
 # to rubn it execute: java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
-script: mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate allure-results/ --clean
+script: mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate allure-results/
