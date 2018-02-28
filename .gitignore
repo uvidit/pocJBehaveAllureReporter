@@ -8,6 +8,7 @@ release.properties
 
 allure-report/
 allure-results/
+.allure/
 
 ### JetBrains
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

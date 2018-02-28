@@ -13,9 +13,14 @@
     <docker.registry>localhost</docker.registry>
     <docker-maven-plugin-version>1.0.0</docker-maven-plugin-version>
     <jbehave.core.version>3.9.1</jbehave.core.version>
-    <!--<jbehave.site.version>3.1.1</jbehave.site.version>-->
-    <!--<hamcrest.version>1.3</hamcrest.version>-->
 
+    <allure.report.version>2.6.0</allure.report.version>
+    <allure.maven-plugin.version>2.9</allure.maven-plugin.version>
+
+    <allure.results.directory>${project.basedir}/allure-results</allure.results.directory>
+    <allure.curent-run-report.directory>${project.build.directory}/allure-report</allure.curent-run-report.directory>
+
+    <maven-assembly-pluginn.version>3.1.0</maven-assembly-pluginn.version>
   </properties>
 
   <dependencies>
@@ -61,17 +66,23 @@
 
   <build>
     <pluginManagement>
+      <!--PLUGINS-versions-->
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>${maven-assembly-pluginn.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>io.qameta.allure</groupId>
+          <artifactId>allure-maven</artifactId>
+          <version>${allure.maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
-
+    <!--PLUGINS-configurations-->
     <plugins>
-      <!-- Maven Assembly Plugin -->
+      <!--to assambe all test into one fat jar-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -104,6 +115,20 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-maven</artifactId>
+        <configuration>
+          <reportVersion>${allure.report.version}</reportVersion>
+              <!--todo: need to setup tms and issue link tmpl-->
+              <!--<properties>-->
+                <!--<allure.issues.tracker.pattern>http://example.com/%s</allure.issues.tracker.pattern>-->
+              <!--</properties>-->
+          <resultsDirectory>${allure.results.directory}</resultsDirectory>
+          <reportDirectory>${allure.curent-run-report.directory}</reportDirectory>
         </configuration>
       </plugin>
 

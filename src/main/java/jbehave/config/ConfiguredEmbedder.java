@@ -16,6 +16,7 @@ import org.jbehave.core.steps.ParameterConverters.DateConverter;
 import org.jbehave.core.steps.SilentStepMonitor;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.jbehave.core.reporters.Format.*;
@@ -28,6 +29,7 @@ public class ConfiguredEmbedder extends Embedder {
 
     public ConfiguredEmbedder(int threads, int timeout){
         super();
+        this.useMetaFilters(Collections.singletonList("-skip"));
         _threads = threads;
         if(timeout > 0){
             _timeout = (int)Math.round(2*timeout/Math.sqrt(threads));
@@ -48,7 +50,12 @@ public class ConfiguredEmbedder extends Embedder {
                         .withDefaultFormats().withPathResolver(new FilePrintStreamFactory.ResolveToPackagedName())
                         .withViewResources(viewResources)
                         .withFormats(CONSOLE, HTML, HTML_TEMPLATE, XML, STATS)
-                        .withReporters(new AllureReporter())
+
+// chose prefered implementation
+//                        .withReporters(new AllureReporter())    // my allure reporter implementation
+//                        .withReporters(new AllureJbehave())     // basic reporter from allure team
+                        .withReporters(new ABeReporter())     // myBeta
+
                         .withFailureTrace(true)
                         .withCrossReference(new CrossReference())
                 )

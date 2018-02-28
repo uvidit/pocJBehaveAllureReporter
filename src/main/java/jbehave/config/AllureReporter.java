@@ -7,8 +7,8 @@ import io.qameta.allure.util.ResultsUtils;
 import org.jbehave.core.model.*;
 import org.jbehave.core.model.Story;
 import org.jbehave.core.reporters.StoryReporter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.logging.Logger;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -21,11 +21,11 @@ import java.util.*;
  */
 // TODO: 11/7/17 need to implement valid SUITE/TEST/STEP status changing in case of existing any IGNORed/PENDed/FAILed/NOT_ALOWed/CANCEled
 // TODO: 11/7/17 need to make calling from java code of: 1) test-results/test-reports dirs cleaning 2) allure report-generating
-// TODO: 11/7/17 need make multithread version by remembering not only carrent step/test/suit uid and data, but generating catalog structure with uid and adding/updating test run info/stat inside using uid
+// TODO: 11/7/17 need make multithread version by remembering not only current step/test/suit uid and data, but generating catalog structure with uid and adding/updating test run info/stat inside using uid
 
 public class AllureReporter implements StoryReporter {
 
-  private static final Logger Log = LoggerFactory.getLogger(AllureLifecycle.class);
+  private static final Logger Log = Logger.getLogger("AllureLifecycle.class");
 
   public static final String MD_5 = "md5";                    // in current impl the value is unique for each story
   public static Story curentStory;
@@ -45,6 +45,10 @@ public class AllureReporter implements StoryReporter {
     suiteUid = generateSuiteUid("DEFAULT_EMPTY_SUITE_NAME");
     testUid = UUID.randomUUID().toString();
     stepUid = UUID.randomUUID().toString();
+    Log.warning("***GGGG* ALLURE INITIALIZING.....");
+    Log.warning("***GGGG* suiteUid: " + suiteUid);
+    Log.warning("***GGGG* testUid: " + testUid);
+    Log.warning("***GGGG* stepUid: " + stepUid);
   }
 
   public AllureReporter(AllureLifecycle lifecycle) {
@@ -55,24 +59,24 @@ public class AllureReporter implements StoryReporter {
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void storyNotAllowed(Story story, String s) {
-    Log.warn("***SSS* storyNotAllowed");
-    Log.warn("** storyNotAllowed (STORY) -> " + story.toString());
-    Log.warn("** storyNotAllowed (SFilter) -> " + s);
+    Log.warning("***SSS* storyNotAllowed");
+    Log.warning("** storyNotAllowed (STORY) -> " + story.toString());
+    Log.warning("** storyNotAllowed (SFilter) -> " + s);
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void storyCancelled(Story story, StoryDuration storyDuration) {
-    Log.warn("***SSS* storyCancelled");
-    Log.warn("** storyCancelled (STORY) -> " + story.toString());
+    Log.warning("***SSS* storyCancelled");
+    Log.warning("** storyCancelled (STORY) -> " + story.toString());
   }
 
   // TODO: 11/7/17 why we need this param : givenStory ???
   @Override
   public void beforeStory(Story story, boolean givenStory) {
-//      Log.warn("***SSS* beforeStory");
-//      Log.warn("** beforeStory (STORY) -> " + story);
-//      Log.warn("** beforeStory (givenStory) -> " + givenStory);
+//      Log.warning("***SSS* beforeStory");
+//      Log.warning("** beforeStory (STORY) -> " + story);
+//      Log.warning("** beforeStory (givenStory) -> " + givenStory);
     currentSuiteStatus = Status.BROKEN; // in any unknown issue status should be as Broken
 
     if (!givenStory) {
@@ -89,8 +93,8 @@ public class AllureReporter implements StoryReporter {
 
   @Override
   public void afterStory(boolean givenStory) {
-//      Log.warn("***SSS* afterStory");
-//      Log.warn("** afterStory (givenStory) " + givenStory);
+//      Log.warning("***SSS* afterStory");
+//      Log.warning("** afterStory (givenStory) " + givenStory);
     getLifecycle().stopTestContainer(suiteUid);
   }
 
@@ -98,29 +102,32 @@ public class AllureReporter implements StoryReporter {
   //it happens after beforeStory and before lifecyle
   @Override
   public void narrative(Narrative narrative) {
-//      Log.warn("**** narrative (Narrative) -> " + narrative);
+//      Log.warning("**** narrative (Narrative) -> " + narrative);
   }
 
   //it happens after beforeStory()->narrative() and launch all scenarios inside
   @Override
   public void lifecyle(Lifecycle lifecycle) {
-//      Log.warn("***LLL* (lifecycle)" + lifecycle);
+//      Log.warning("***LLL* (lifecycle)" + lifecycle);
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void scenarioNotAllowed(Scenario scenario, String filter) {
-    Log.warn("***TTT* scenarioNotAllowed");
-    Log.warn("***TTT* scenarioNotAllowed (scenario) -> " + scenario);
-    Log.warn("***TTT* scenarioNotAllowed (filter) -> " + filter);
+    Log.warning("***TTT* scenarioNotAllowed");
+    Log.warning("***TTT* scenarioNotAllowed (scenario) -> " + scenario);
+    Log.warning("***TTT* scenarioNotAllowed (filter) -> " + filter);
   }
 
 
   @Override
   public void beforeScenario(String scenarioTitle) {
-//      Log.warn("***TTT* beforeScenario" );
+//      Log.warning("***TTT* beforeScenario" );
     currentTestStatus = Status.BROKEN; // in any unknown issue status should be as Broken
     testUid = UUID.randomUUID().toString();
+    Log.warning("***GGGG* testUid generated: " + testUid);
+
+
     TestResult result = this.createTestResult(testUid, curentStory, scenarioTitle);
     this.getLifecycle().scheduleTestCase(result);
     this.getLifecycle().startTestCase(testUid);
@@ -129,12 +136,12 @@ public class AllureReporter implements StoryReporter {
   // TODO: 11/7/17 need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void scenarioMeta(Meta meta) {
-//    Log.warn("***TTT* scenarioMeta (meta) ->" + meta);
+//    Log.warning("***TTT* scenarioMeta (meta) ->" + meta);
   }
 
   @Override
   public void afterScenario() {
-//      Log.warn("***TTT* afterScenario (noParam)");
+//      Log.warning("***TTT* afterScenario (noParam)");
     this.getLifecycle().updateTestCase(testUid, (testResult) -> {
       if (Objects.isNull(testResult.getStatus())) {
         testResult.setStatus(currentTestStatus);
@@ -144,54 +151,56 @@ public class AllureReporter implements StoryReporter {
     try {
       this.getLifecycle().writeTestCase(testUid);
     } catch (Exception e) {
-      Log.error("@@@@ " + e.getMessage() + " **** " + e.getStackTrace());
+      Log.warning("@@@@ " + e.getMessage() + " **** " + e.getStackTrace());
     }
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void givenStories(GivenStories givenStories) {
-    Log.warn("***???* givenStories 1 ");
-    Log.warn("*** givenStories 1 (givenStories) ->" + givenStories);
+    Log.warning("***???* givenStories 1 ");
+    Log.warning("*** givenStories 1 (givenStories) ->" + givenStories);
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void givenStories(List<String> storyPaths) {
-    Log.warn("***???* givenStories 2");
-    Log.warn("*** givenStories 2 (storyPaths) ->" + storyPaths);
+    Log.warning("***???* givenStories 2");
+    Log.warning("*** givenStories 2 (storyPaths) ->" + storyPaths);
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void beforeExamples(List<String> steps, ExamplesTable examplesTable) {
-    Log.warn("**** beforeExamples");
+    Log.warning("**** beforeExamples");
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void example(Map<String, String> tableRow) {
-    Log.warn("**** example");
+    Log.warning("**** example");
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void afterExamples() {
-    Log.warn("**** afterExamples");
+    Log.warning("**** afterExamples");
   }
 
 
   @Override
   public void beforeStep(String step) {
-//      Log.warn("**** beforeStep");
+//      Log.warning("**** beforeStep");
     stepUid = UUID.randomUUID().toString();
+    Log.warning("***GGGG* stepUid generated: " + stepUid);
+
     getLifecycle().startStep(stepUid
         , (new StepResult()).withName(step).withStatus(Status.BROKEN));
   }
 
   @Override
   public void successful(String step) {
-//      Log.warn("**** successful");
+//      Log.warning("**** successful");
     getLifecycle().updateStep(stepUid, stepResult -> {
       stepResult.withStatus(Status.PASSED);
     });
@@ -201,7 +210,7 @@ public class AllureReporter implements StoryReporter {
   // usually it happens on comments and commented steps (without beforeStep calling)
   @Override
   public void ignorable(String step) {
-//      Log.warn("**** ignorable");
+//      Log.warning("**** ignorable");
     getLifecycle().updateStep(stepUid, (stepResult) -> {
       stepResult.withStatus(Status.SKIPPED).withStatusDetails(
           new StatusDetails().withMessage("IGNORED (step: " + step + "."));
@@ -211,7 +220,7 @@ public class AllureReporter implements StoryReporter {
   // usually it happens on undefined steps (without beforeStep calling)
   @Override
   public void pending(String step) {
-//      Log.warn("**** pending");
+//      Log.warning("**** pending");
     getLifecycle().updateStep(stepUid, (stepResult) -> {
       stepResult.withStatus(Status.BROKEN).withStatusDetails(
           new StatusDetails().withMessage("PENDING (step: " + step + "."));
@@ -222,7 +231,7 @@ public class AllureReporter implements StoryReporter {
   // usually it happens on steps din't performed after any fail happens in current case (without beforeStep calling)
   @Override
   public void notPerformed(String step) {
-//      Log.warn("**** notPerformed");
+//      Log.warning("**** notPerformed");
     getLifecycle().updateStep(stepUid, (stepResult) -> {
       stepResult.withStatus(Status.SKIPPED).withStatusDetails(
           new StatusDetails().withMessage("NOT PERFORMED (step: " + step + "."));
@@ -231,7 +240,7 @@ public class AllureReporter implements StoryReporter {
 
   @Override
   public void failed(String step, Throwable cause) {
-//      Log.warn("**** failed");
+//      Log.warning("**** failed");
 
     getLifecycle().addAttachment("postScenarioAttachment", "text/plain", "txt",
         "Here we could attach any post scenario text...".getBytes());
@@ -246,35 +255,39 @@ public class AllureReporter implements StoryReporter {
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void failedOutcomes(String step, OutcomesTable outcomesTable) {
-    Log.warn("**** failedOutcomes");
+    Log.warning("**** failedOutcomes");
 
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void restarted(String step, Throwable throwable) {
-    Log.warn("**** restarted");
+    Log.warning("**** restarted");
 
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void dryRun() {
-    Log.warn("**** dryRun");
+    Log.warning("**** dryRun");
 
   }
 
   // TODO: 11/7/17 unknown used method - need to add some stat notifying in TIERED DOWN CASE if any calls did
   @Override
   public void pendingMethods(List<String> list) {
-    Log.warn("**** pendingMethods");
+    Log.warning("**** pendingMethods");
   }
 
   private String generateSuiteUid(String suiteName) {
-    String uid = UUID.randomUUID().toString();
+//    String uid = UUID.randomUUID().toString();
+    String uid = md5(suiteName); // trying to make suite uid always predictable (should be the same for saving history)
     synchronized (getSuites()) {
       getSuites().put(suiteName, uid);
     }
+
+    Log.warning("***GGGG* suiteUid generated....");
+
     return uid;
   }
 
@@ -289,9 +302,11 @@ public class AllureReporter implements StoryReporter {
     String path = story.getPath();
     String name = Objects.nonNull(path) ? path : storyName;
     String fullName = Objects.nonNull(storyName) ? String.format("%s.%s", storyName, path) : storyName;
-    TestResult testResult = (new TestResult()).withUuid(uuid)
-        .withHistoryId(this.getHistoryId(story, curentScenario))
+
+    TestResult testResult = (new TestResult()).withUuid(uuid)    // need to save test run to separate data-file
+        .withHistoryId(this.getHistoryId(story, curentScenario)) // needed to show test rerun on test 'Retries' tab
         .withStatus(Status.BROKEN)
+
         .withName(name).withFullName(fullName)
 //          .withLinks(this.getLinks(description))
         .withLabels(new Label[]{
@@ -303,7 +318,9 @@ public class AllureReporter implements StoryReporter {
 //              , (new Label()).withName("testClass").withValue("Put CLASS name here")
 //              , (new Label()).withName("testMethod").withValue(name)
 //            , (new Label()).withName("tag").withValue("Put TAG name here")
-        });
+        })
+        //.withRerunOf("605ad211-fc4d-4028-8142-9206c37139fb")
+        ;
 //    testResult.getLabels().addAll(this.getLabels(story));
     this.getDisplayName(story).ifPresent(testResult::setName);
     return testResult;
@@ -330,8 +347,8 @@ public class AllureReporter implements StoryReporter {
   private MessageDigest getMessageDigest() {
     try {
       return MessageDigest.getInstance("md5");
-    } catch (NoSuchAlgorithmException var2) {
-      throw new IllegalStateException("Could not find md5 hashing algorithm", var2);
+    } catch (NoSuchAlgorithmException exception) {
+      throw new IllegalStateException("Could not find md5 hashing algorithm", exception);
     }
   }
 
