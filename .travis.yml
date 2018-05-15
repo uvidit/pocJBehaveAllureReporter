@@ -17,11 +17,11 @@ script: mvn clean package
   # Skip cleanup so api_key.py and vendored dependencies are still there
 skip_cleanup: true
 
-deploy:
-  provider: script
-  script: bash start.sh
-  on:
-    branch: master
+#deploy:
+#  provider: script
+#  script: bash start.sh
+#  on:
+#    branch: master
 
 notifications: # set notification options
   email:
