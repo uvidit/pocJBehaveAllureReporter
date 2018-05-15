@@ -12,7 +12,7 @@ install:
   - echo "Creating Bucket on Google Storage....."
 
 # build fat executable single jar
-# to run it execute: java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
+#   to run it execute: java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
 script: mvn clean package
   # Skip cleanup so api_key.py and vendored dependencies are still there
 skip_cleanup: true
