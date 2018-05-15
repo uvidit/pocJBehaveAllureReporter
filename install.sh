@@ -39,7 +39,7 @@ java -jar /opt/gcedeploy/${JAR_NAME}
 
 echo "--------------------------------------------------------"
 echo " saving test results to GC bucket ...."
-#gsutil cp /opt/gcedeploy/* gs://${BUCKET_NAME}/rawTestResults
+
 gsutil -m cp -r /allure-results gs://${BUCKET_NAME}
 gsutil -m cp -r /allure-results/* gs://${BUCKET_NAME}/allure-results_$(date +%F)/
 
