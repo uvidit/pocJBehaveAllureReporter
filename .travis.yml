@@ -33,5 +33,5 @@ notifications: # set notification options
     on_success: [change]
     on_failure: [always]
   # Or we could just disable all email
-  email: false
+#  email: false
 
