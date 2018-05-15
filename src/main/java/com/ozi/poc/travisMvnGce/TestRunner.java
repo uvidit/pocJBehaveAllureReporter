@@ -10,16 +10,19 @@ import org.jbehave.core.io.StoryFinder;
 
 import java.util.List;
 
-//import java.util.logging.Logger;
-
 import static java.util.Arrays.asList;
 
 @UsingEmbedder(metaFilters = "-skip")
+
+//@SpringBootApplication
+//@RestController
 public class TestRunner {
 //  private static final Logger LOG = Logger.getLogger("TestRunner");
 
 
   public static void main(String[] args) throws Exception {
+
+                      //    SpringApplication.run(TestRunner.class, args);
 //    LOG.info("\r\n ======================= \r\n **** Tests has been started.....");
 
     // Embedder defines the configuration and candidate steps
@@ -35,6 +38,15 @@ public class TestRunner {
 //    LOG.info("\r\n **** Tests has been finished \r\n ======================= ");
   }
 
+//  @RequestMapping("/")
+//  public String hello(){
+//    return "hello";
+//  }
+//
+//  @RequestMapping("/report")
+//  public String report(){
+//    return "redirect:/jbehave/view/index.html";
+//  }
 
   //////////////// additional string utils - need to refactor and move to separate class
   private static List <String> storyPaths(String storiesFilter) {

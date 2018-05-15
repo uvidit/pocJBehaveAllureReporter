@@ -7,6 +7,9 @@ import org.jbehave.core.steps.Steps;
 
 import java.util.logging.Logger;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 public class BasicSteps extends Steps {
   private static final Logger LOG = Logger.getLogger("basicSteps");
 
@@ -29,4 +32,9 @@ public class BasicSteps extends Steps {
     LOG.info(" ... and got 5.");
   }
 
+  @Then("test suddenly failed...")
+  public void testSuddenlyFailed() {
+    // PENDING  todo: need any impl here
+    assertThat("true is .... false?", true, equalTo(false));
+  }
 }

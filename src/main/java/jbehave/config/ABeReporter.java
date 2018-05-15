@@ -10,6 +10,8 @@ import org.jbehave.core.model.*;
 import org.jbehave.core.reporters.StoryReporter;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -40,14 +42,14 @@ public class ABeReporter implements StoryReporter{
   * some labling or grouping functionality will be maped using Meta tags in jBehave. It will be a list of keyword tags
   * for global issues loging will create an special suite and test or even tearDown STEP, and will collect all issues, wornings or not implemented or not processed staff to it
   * scenarios with examples will be transformed to separate tascases
-  *     // adapter will convert predefined @-tags to allure labels/parameters/links/attributes:
+  * // adapter will convert predefined @-tags to allure labels/parameters/links/attributes:
     // @link urlName|urlValue
     // @issue urlName|urlValue
     // @tms urlName|urlValue
 
     // @Severity {BLOCKER("blocker")|CRITICAL("critical")|NORMAL("normal")|MINOR("minor")|TRIVIAL("trivial")}
 
-      //            // BEHAVIOURS-tab tree grouping:
+  //            // BEHAVIOURS-tab tree grouping:
   //            , ResultsUtils.createEpicLabel(">>> EPIC Label <<<<")
   //            , ResultsUtils.createFeatureLabel(">>> FEATURE Label <<<<")
   //            , ResultsUtils.createStoryLabel(">>> STORY Label <<<<")
@@ -59,11 +61,7 @@ public class ABeReporter implements StoryReporter{
   //            , ResultsUtils.createOwnerLabel(">>> OWNER Label <<<<")
   //            , ResultsUtils.createSeverityLabel(SeverityLevel.CRITICAL)
 
-//        TODO: not works :(
-//        widgets : TREND, CATEGORIES, SUITES
-//        .withRerunOf()
-//        .withTestCaseId("@@@ changed TEST CASE ID @@@@") // don't know how to use it and why %) , but in this way it broke the report
-
+  //        .withRerunOf() //TODO: not works :(
  */
 
 //  private static final Logger LOGGER = Logger.getLogger(AllureLifecycle.class.getName());
@@ -129,6 +127,10 @@ public class ABeReporter implements StoryReporter{
     startNewAllureTestCase(currentScenarioTitle);
     // TODO: need update all data manually, because JBehave will do nothing for this scenario so allure get nothing in common way ((
     scenarioMeta(scenario.getMeta());
+    getLifecycle().updateTestCase(scenarios.get(),
+        testResult -> testResult.withStatusDetails(new StatusDetails()
+            .withMessage("Test was ignored by jBehave engine. Root cause is existing '@skip' metatag or story-filter excluding parameter.")
+            .withTrace("No trace here.")));
     finalizeAllureTestCaseWithStatusByUuid(scenarios.get(), Status.SKIPPED);
   }
 
@@ -173,8 +175,8 @@ public class ABeReporter implements StoryReporter{
       finalizeCurrentAllureTestCase();
       startNewAllureTestCase(currentScenarioTitle);
     }
-    //update allureTestCaseArtifact with sufix 'EXAMPLE #n' -
-    //  that means we need update all scenario name related properties (actually name, fullNme, and calculated historyId)
+    // update allureTestCaseArtifact with sufix 'EXAMPLE #n' -
+    //   that means we need update all scenario name related properties (actually name, fullNme, and calculated historyId)
     exampleInstanceLaunchCounter++; //
     String currentUuid = scenarios.get();
 
@@ -187,7 +189,9 @@ public class ABeReporter implements StoryReporter{
       testResult.withName(String.format("%s (%s%d)", currentScenarioTitle, EXAMPLE_TITLE_ENDING, exampleInstanceLaunchCounter ))
         .withFullName(String.format("%s (%s%d)", testResult.getFullName(), EXAMPLE_TITLE_ENDING, exampleInstanceLaunchCounter ))
         .withHistoryId(testResult.getFullName())
-        .withParameters(parameterList);
+        .withParameters(parameterList)
+        .withStatusDetails(new StatusDetails().withMessage("Unknown test status.").withTrace("No trace yet.")
+        );
       }
     );
   }
@@ -207,12 +211,18 @@ public class ABeReporter implements StoryReporter{
   public void successful(final String stepName) {
     getLifecycle().updateStep(result -> result.withStatus(Status.PASSED));
     getLifecycle().stopStep();
+
+    getLifecycle().updateTestCase(scenarios.get(),
+        testResult -> {testResult.withStatusDetails(new StatusDetails()
+            .withMessage("Test passed."));});
+
     updateScenarioStatus(Status.PASSED);
   }
 
-  // TODO: is SKIPPED status strong enough?
+  //JBehave provide all commented strings inside story file as ignored steps
   @Override
   public void ignorable(final String stepName) {
+    beforeStep(stepName); // jBehave doesn't need it, but Allure does
     getLifecycle().updateStep(result -> result.withStatus(Status.SKIPPED));
     getLifecycle().stopStep();
     updateScenarioStatus(Status.SKIPPED);
@@ -222,8 +232,9 @@ public class ABeReporter implements StoryReporter{
   @Override
   public void pending(final String stepName) {
     beforeStep(stepName); // jBehave doesn't need it, but Allure does
-
-    getLifecycle().updateStep(result -> result.withStatus(Status.BROKEN));
+    getLifecycle().updateStep(result -> result
+        .withStatus(Status.BROKEN)
+        .withName(String.format("PENDING (not implemented): %s", stepName)));
     getLifecycle().stopStep();
     updateScenarioStatus(Status.BROKEN);
   }
@@ -233,17 +244,26 @@ public class ABeReporter implements StoryReporter{
   public void notPerformed(String stepName) {
     beforeStep(stepName); // jBehave doesn't need it, but Allure does
 
-    getLifecycle().updateStep(result -> result.withStatus(Status.SKIPPED));
+    getLifecycle().updateStep(result -> result.withStatus(Status.SKIPPED)
+        .withName(String.format("NOT PERFORMED: %s", stepName)));
     getLifecycle().stopStep();
     updateScenarioStatus(Status.SKIPPED);
   }
 
   @Override
   public void failed(final String step, final Throwable cause) {
-    ResultsUtils.getStatus(cause).ifPresent(status ->
-        getLifecycle().updateStep( result -> result.withStatus(status))
-    );
+    getLifecycle().updateStep( result -> result.withStatus(Status.FAILED));
     getLifecycle().stopStep();
+    getLifecycle().updateTestCase(scenarios.get(),
+        testResult ->  {
+          StringWriter traceStringWriter = new StringWriter();
+          cause.printStackTrace(new PrintWriter(traceStringWriter));
+
+          testResult.withStatusDetails(new StatusDetails()
+            .withMessage(cause.getCause().toString())
+            .withTrace(traceStringWriter.toString())
+          );
+        });
     updateScenarioStatus(Status.FAILED);
   }
 
@@ -278,6 +298,7 @@ public class ABeReporter implements StoryReporter{
     final String scenarioUuid = scenarios.get();
     max(scenarioStatusStorage.get(scenarioUuid), passed)
         .ifPresent(status -> scenarioStatusStorage.put(scenarioUuid, status));
+//    getLifecycle().getCurrentTestCase().ifPresent();
   }
 
   // Status comparator (from max to min there are statuses : FAILED/BROKEN/PASSED/SKIPPED)
@@ -317,15 +338,6 @@ public class ABeReporter implements StoryReporter{
     final String uuid = scenarios.get();
     final String fullName = String.format("%s: %s", story.getName(), scenarioTitle);
 
-    // TODO: change harcoded statusDetails entity on real with up-to-date data
-    StatusDetails statusDetails = new StatusDetails()
-        .withMessage(">someStatusDetails MSG<")
-        .withFlaky(false) // FLAKY/ non-FLAKY // will show BOMB-icon on UI for unstable tests
-        .withKnown(false) // KNOWN/ nonKNOWN  // TODO: how does it works?
-        .withMuted(false) // muted/non-muted  // TODO: how does it works?
-        .withTrace(">someStatusDetails TRACE here....<")
-        ;
-
     final TestResult result = new TestResult()
         .withUuid(uuid)
         .withStage(Stage.SCHEDULED)
@@ -333,16 +345,16 @@ public class ABeReporter implements StoryReporter{
         // TEST-tab properties
         .withName(scenarioTitle)
         .withFullName(fullName)
-
+        .withStatusDetails(new StatusDetails().withMessage("Unknown test status.").withTrace("No trace yet."))
+        // TODO: possible solution - get info from tags or ...
         // TODO: this labels/tags/links need to be moved to separate methods and applied not hard coded data
-        .withStatusDetails(statusDetails) // TODO: possible solution - get info from tags or ...
         .withParameters( new Parameter().withName("someParamName").withValue("someParamValue"))
 
         //jBehave narative to allure test description
                 // commented simple description because: we all know - description and html is much better than description only %)
                 // .withDescription(story.getNarrative().asString(new Keywords())) // simple text description
         .withDescriptionHtml(story.getNarrative().asString(new Keywords())
-            .replaceAll("^\n|\n$", "") // don't like lead and end line breaks
+            .replaceAll("^\n|\n$", "") // don't like leading and ending line breaks
             .replaceAll("\n|\r|\r\n", "<br>")) // tada!! it's html now! %)
 
         .withLabels(
@@ -355,6 +367,7 @@ public class ABeReporter implements StoryReporter{
                                 // update with meta tags
                                 //TODO: refactor this code
                                 // need update all Meta for each examples with prev example instance (overvise meta data will be lost for the next examples)
+                                // in other words we need to copy manually all existed metaTags from example to example
                                 //// TAGS
                                 List<Meta> metaList = new ArrayList<>();
                                 stories.get().getScenarios().stream().filter(scenario ->
@@ -462,7 +475,7 @@ public class ABeReporter implements StoryReporter{
   }
 
   private List<Label> convertJBehaveMetaListToAllureLabels(List<Meta> listOfMeta){
-    // be sure curent method process only first list item and ignore all other // TODO: need refactor w/o 'get(0)' because metaList contains only one item of Meta tag set
+    // be sure curent method process only first list item and ignore all other // TODO: need to refactor w/o 'get(0)' because metaList contains only one item of Meta tag set
     List<Label> metaTagList = new ArrayList<>();
     Meta singleMetaSet = listOfMeta.get(0);
     singleMetaSet.getPropertyNames().forEach(item ->
