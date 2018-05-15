@@ -6,16 +6,6 @@ JAR_NAME=travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
 VM_NAME=gcedeploy
 
 # Decrypt the credentials we added to the repo using the key we added with the Travis command line tool
-openssl aes-256-cbc -K $encrypted_c5904ac432bd_key -iv $encrypted_c5904ac432bd_iv \
-    -in super_secret.txt.enc -out super_secret.txt -d
-
-# If the SDK is not already cached, download it and unpack it
-if [ ! -d ${HOME}/google-cloud-sdk ]; then
-   curl https://sdk.cloud.google.com | bash;
-fi
-echo "Google SDK downloaded."
-echo "Creating Bucket on Google Storage....."
-
 gsutil mb gs://${BUCKET_NAME}
 gsutil cp ./target/${JAR_NAME} gs://${BUCKET_NAME}/${JAR_NAME}
 
