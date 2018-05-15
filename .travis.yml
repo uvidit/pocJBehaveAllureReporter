@@ -13,3 +13,15 @@ deploy:
   on:
     branch: master
 
+notifications: # set notification options
+  email:
+    recipients:
+      - uvidit@gmail.com
+    # change is when the repo status goes from pass to fail or vice versa
+#    on_success: [always|never|change]
+#    on_failure: [always|never|change]
+    on_success: [change]
+    on_failure: [always]
+  # Or we could just disable all email
+  email: false
+
