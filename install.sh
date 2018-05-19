@@ -49,7 +49,7 @@ echo " saving test results to GC bucket ...."
 gsutil -m cp -r /allure-report gs://${BUCKET_NAME}/
 
 gsutil -m cp -r /allure-results gs://${BUCKET_NAME}
-gsutil -m cp -r /allure-results/* gs://${BUCKET_NAME}/allure-results_$(date +%F)/
+gsutil -m cp -r /allure-results/* gs://${BUCKET_NAME}/allure-results_$(date +%Y.%m.%d_%H-%M)/
 
 
 echo "--------------------------------------------------------"
