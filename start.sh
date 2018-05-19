@@ -4,18 +4,14 @@ BUCKET_NAME=allure-poc-prjct-bucket
 
 JAR_NAME=travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
 VM_NAME=gcedeploy
-GCLOUD_DIR=google-cloud-sdk
 
-gcloud info --format='value(installation.sdk_root)' | xargs rm -rf
-rm -rf ~/${GCLOUD_DIR}
-rm -rf ~/.config/gcloud
-
-curl https://sdk.cloud.google.com | bash
-chmod +x ~/${GCLOUD_DIR}/install.sh
-CLOUDSDK_CORE_DISABLE_PROMPTS=1 ~/${GCLOUD_DIR}/install.sh
-
-source /Users/ozinchenko/google-cloud-sdk/completion.bash.inc
-source /Users/ozinchenko/google-cloud-sdk/path.bash.inc
+echo "Google SDK install...."
+gcloud version || true
+if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+# Add gcloud to $PATH
+source $HOME/google-cloud-sdk/completion.bash.inc
+source $HOME/google-cloud-sdk/path.bash.inc
+gcloud version
 
 gcloud auth activate-service-account \
     gc-svc-acc-allure-reporter-prj@test-gce-prjct.iam.gserviceaccount.com \
