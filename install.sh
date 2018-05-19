@@ -66,6 +66,12 @@ curl -s -X POST -H "Content-Type: application/json" \
                 https://api.travis-ci.org/repo/uvidit%2FpocProjectDocPages/requests
 
 echo "--------------------------------------------------------"
+echo " @ Saving gce log..."
+gcloud compute --project=test-gce-prjct instances get-serial-port-output gcedeploy --zone=us-central1-a > ./gce_$(date +%Y.%m.%d_%H-%M)/.log
+gsutil -m cp ./gce_*.log gs://${BUCKET_NAME}
+echo "--------------------------------------------------------"
+
+
 echo "  stopping GCE instance ...."
 sudo shutdown now -h now
 
