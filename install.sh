@@ -63,7 +63,7 @@ curl -s -X POST -H "Content-Type: application/json" \
 
 echo "--------------------------------------------------------"
 echo "  stopping GCE instance ...."
-sudo shutdown now
+sudo shutdown now -h now
 
 echo "  CUT! Thank you all!!! Buy! %)"
 echo "========================================================"
