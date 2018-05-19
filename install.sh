@@ -39,8 +39,8 @@ mkdir /${GCE_DEPLOY_DIR}
 gsutil cp gs://${BUCKET_NAME}/${JAR_NAME} /${GCE_DEPLOY_DIR}/${JAR_NAME}
 java -jar /${GCE_DEPLOY_DIR}/${JAR_NAME}
 
-mkdir /${ALLURE_RESULTS}
-mkdir /${ALLURE_RESULTS}/history
+mkdir -p /${ALLURE_RESULTS}
+mkdir -p /${ALLURE_RESULTS}/history
 gsutil cp gs://${BUCKET_NAME}/allure-report/history/* /${ALLURE_RESULTS}/history
 
 gsutil -m cp -r gs://${BUCKET_NAME}/.allure /
@@ -67,7 +67,7 @@ curl -s -X POST -H "Content-Type: application/json" \
 
 echo "--------------------------------------------------------"
 echo " @ Saving gce log..."
-gcloud compute --project=test-gce-prjct instances get-serial-port-output gcedeploy --zone=us-central1-a > ./gce_$(date +%Y.%m.%d_%H-%M)/.log
+gcloud compute --project=test-gce-prjct instances get-serial-port-output gcedeploy --zone=us-central1-a > ./gce_$(date +%Y.%m.%d_%H-%M).log
 gsutil -m cp ./gce_*.log gs://${BUCKET_NAME}
 echo "--------------------------------------------------------"
 
