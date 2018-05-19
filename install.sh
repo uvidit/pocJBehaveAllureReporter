@@ -6,6 +6,7 @@ BUCKET_NAME=allure-poc-prjct-bucket
 JAR_NAME=travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 GCE_DEPLOY_DIR=opt/gcedeploy
+ALLURE_RESULTS=allure-results
 
 VM_NAME=gcedeploy
 
@@ -35,9 +36,12 @@ apt-get install oracle-java8-installer -y
 echo "--------------------------------------------------------"
 echo " deploying test artifact to env and launching it ...."
 mkdir /${GCE_DEPLOY_DIR}
-
 gsutil cp gs://${BUCKET_NAME}/${JAR_NAME} /${GCE_DEPLOY_DIR}/${JAR_NAME}
 java -jar /${GCE_DEPLOY_DIR}/${JAR_NAME}
+
+mkdir /${ALLURE_RESULTS}
+mkdir /${ALLURE_RESULTS}/history
+gsutil cp gs://${BUCKET_NAME}/allure-report/history/* /${ALLURE_RESULTS}/history
 
 gsutil -m cp -r gs://${BUCKET_NAME}/.allure /
 chmod +x .allure/allure-2.6.0/bin/allure

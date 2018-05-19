@@ -10,7 +10,7 @@
   ### with collecting history 
     ## mkdir -p allure-results/history &&  mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && mvn allure:report && \cp target/allure-report/history/* allure-results/history/
   ### to run it in separate env with java and maven only
-    ## mkdir -p allure-results/history &&java -jar travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && mvn aure:report && \cp target/allure-report/history/* allure-results/history/  
+    ## mkdir -p allure-results/history &&java -jar travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && mvn allure:report && \cp target/allure-report/history/* allure-results/history/
        
 ########################################
 ## maping jBehave lifecycle to Allure:
