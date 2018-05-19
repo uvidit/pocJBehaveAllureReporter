@@ -1,9 +1,11 @@
 #! /bin/bash
 
-## This startup script runs ON the compute vm
+## This startup script runs ON the compute vm inside GCE
 
 BUCKET_NAME=allure-poc-prjct-bucket
 JAR_NAME=travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+GCE_DEPLOY_DIR=opt/gcedeploy
 
 VM_NAME=gcedeploy
 
@@ -32,13 +34,19 @@ apt-get install oracle-java8-installer -y
 
 echo "--------------------------------------------------------"
 echo " deploying test artifact to env and launching it ...."
-mkdir /opt/gcedeploy
+mkdir /${GCE_DEPLOY_DIR}
 
-gsutil cp gs://${BUCKET_NAME}/${JAR_NAME} /opt/gcedeploy/${JAR_NAME}
-java -jar /opt/gcedeploy/${JAR_NAME}
+gsutil cp gs://${BUCKET_NAME}/${JAR_NAME} /${GCE_DEPLOY_DIR}/${JAR_NAME}
+java -jar /${GCE_DEPLOY_DIR}/${JAR_NAME}
+
+gsutil -m cp -r gs://${BUCKET_NAME}/.allure /
+chmod +x .allure/allure-2.6.0/bin/allure
+.allure/allure-2.6.0/bin/allure -v generate allure-report
 
 echo "--------------------------------------------------------"
 echo " saving test results to GC bucket ...."
+
+gsutil -m cp -r /allure-report gs://${BUCKET_NAME}/
 
 gsutil -m cp -r /allure-results gs://${BUCKET_NAME}
 gsutil -m cp -r /allure-results/* gs://${BUCKET_NAME}/allure-results_$(date +%F)/
