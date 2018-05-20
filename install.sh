@@ -41,6 +41,8 @@ java -jar /${GCE_DEPLOY_DIR}/${JAR_NAME}
 
 mkdir -p /${ALLURE_RESULTS}
 mkdir -p /${ALLURE_RESULTS}/history
+
+# to get trend data - needed last report history dir with all data in it
 gsutil cp gs://${BUCKET_NAME}/allure-report/history/* /${ALLURE_RESULTS}/history
 
 gsutil -m cp -r gs://${BUCKET_NAME}/.allure /
@@ -50,6 +52,7 @@ chmod +x .allure/allure-2.6.0/bin/allure
 echo "--------------------------------------------------------"
 echo " saving test results to GC bucket ...."
 
+gsutil -m rm -rf gs://${BUCKET_NAME}/allure-report/*
 gsutil -m cp -r /allure-report gs://${BUCKET_NAME}/
 
 gsutil -m cp -r /allure-results gs://${BUCKET_NAME}
@@ -72,9 +75,9 @@ gsutil -m cp ./gce_*.log gs://${BUCKET_NAME}
 echo "--------------------------------------------------------"
 
 
-echo "  stopping GCE instance ...."
-sudo shutdown now -h now
-
-echo "  CUT! Thank you all!!! Buy! %)"
-echo "========================================================"
-exit
+#echo "  stopping GCE instance ...."
+#sudo shutdown now -h now
+#
+#echo "  CUT! Thank you all!!! Buy! %)"
+#echo "========================================================"
+#exit
