@@ -33,19 +33,39 @@ apt-get update
 echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
 apt-get install oracle-java8-installer -y
 
+echo "Google SDK install...."
+gcloud version || true
+if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+# Add gcloud to $PATH
+source $HOME/google-cloud-sdk/completion.bash.inc
+source $HOME/google-cloud-sdk/path.bash.inc
+gcloud version
+
+echo $GCE_SVC_KEY | base64 --decode --output ./gcloud-api-key.json
+cat ./gcloud-api-key.json
+
+gcloud auth activate-service-account \
+    gc-svc-acc-allure-reporter-prj@test-gce-prjct.iam.gserviceaccount.com \
+    --key-file ./gcloud-api-key.json
+
+gcloud config set project test-gce-prjct
+echo "Google SDK info:"
+gcloud info
+
+echo "Google SDK downloaded."
 echo "--------------------------------------------------------"
 echo " deploying test artifact to env and launching it ...."
 mkdir -p /${ALLURE_RESULTS}
 rm -rf /${ALLURE_RESULTS}/*
-mkdir -p /${ALLURE_RESULTS}/history
-rm -rf /${ALLURE_RESULTS}/history/*
 
 mkdir /${GCE_DEPLOY_DIR}
 gsutil cp gs://${BUCKET_NAME}/${JAR_NAME} /${GCE_DEPLOY_DIR}/${JAR_NAME}
 java -jar /${GCE_DEPLOY_DIR}/${JAR_NAME}
 
 
-# to get trend data - needed last report history dir with all data in it
+echo " to get trend data - needed last report history dir with all data in it"
+mkdir -p /${ALLURE_RESULTS}/history
+rm -rf /${ALLURE_RESULTS}/history/*
 gsutil cp gs://${BUCKET_NAME}/allure-report/history/* /${ALLURE_RESULTS}/history
 
 gsutil -m cp -r gs://${BUCKET_NAME}/.allure /
