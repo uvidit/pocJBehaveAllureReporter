@@ -35,19 +35,22 @@ apt-get install oracle-java8-installer -y
 
 echo "--------------------------------------------------------"
 echo " deploying test artifact to env and launching it ...."
+mkdir -p /${ALLURE_RESULTS}
+rm -rf /${ALLURE_RESULTS}/*
+mkdir -p /${ALLURE_RESULTS}/history
+rm -rf /${ALLURE_RESULTS}/history/*
+
 mkdir /${GCE_DEPLOY_DIR}
 gsutil cp gs://${BUCKET_NAME}/${JAR_NAME} /${GCE_DEPLOY_DIR}/${JAR_NAME}
 java -jar /${GCE_DEPLOY_DIR}/${JAR_NAME}
 
-mkdir -p /${ALLURE_RESULTS}
-mkdir -p /${ALLURE_RESULTS}/history
 
 # to get trend data - needed last report history dir with all data in it
 gsutil cp gs://${BUCKET_NAME}/allure-report/history/* /${ALLURE_RESULTS}/history
 
 gsutil -m cp -r gs://${BUCKET_NAME}/.allure /
 chmod +x .allure/allure-2.6.0/bin/allure
-.allure/allure-2.6.0/bin/allure -v generate allure-report
+.allure/allure-2.6.0/bin/allure -v generate --clean
 
 echo "--------------------------------------------------------"
 echo " saving test results to GC bucket ...."
@@ -55,7 +58,7 @@ echo " saving test results to GC bucket ...."
 gsutil -m rm -rf gs://${BUCKET_NAME}/allure-report/*
 gsutil -m cp -r /allure-report gs://${BUCKET_NAME}/
 
-gsutil -m cp -r /allure-results gs://${BUCKET_NAME}
+#gsutil -m cp -r /allure-results gs://${BUCKET_NAME}
 gsutil -m cp -r /allure-results/* gs://${BUCKET_NAME}/allure-results_$(date +%Y.%m.%d_%H-%M)/
 
 
@@ -75,9 +78,9 @@ gsutil -m cp ./gce_*.log gs://${BUCKET_NAME}
 echo "--------------------------------------------------------"
 
 
-#echo "  stopping GCE instance ...."
-#sudo shutdown now -h now
-#
-#echo "  CUT! Thank you all!!! Buy! %)"
-#echo "========================================================"
-#exit
+echo "  stopping GCE instance ...."
+sudo shutdown now -h now
+
+echo "  CUT! Thank you all!!! Buy! %)"
+echo "========================================================"
+exit

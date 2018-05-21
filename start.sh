@@ -13,7 +13,9 @@ source $HOME/google-cloud-sdk/completion.bash.inc
 source $HOME/google-cloud-sdk/path.bash.inc
 gcloud version
 
-echo $GCE_SVC_KEY | base64 --decode --ignore-garbage > ./gcloud-api-key.json
+echo $GCE_SVC_KEY | base64 --decode --output ./gcloud-api-key.json
+cat ./gcloud-api-key.json
+
 gcloud auth activate-service-account \
     gc-svc-acc-allure-reporter-prj@test-gce-prjct.iam.gserviceaccount.com \
     --key-file ./gcloud-api-key.json
