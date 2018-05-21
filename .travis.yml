@@ -14,7 +14,7 @@ skip_cleanup: true
 
 deploy:
   provider: script
-  script: bash start.sh
+  script: bash start.sh $GCE_SVC_KEY
   on:
     branch: master
 
