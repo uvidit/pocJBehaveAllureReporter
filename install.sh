@@ -41,6 +41,7 @@ source $HOME/google-cloud-sdk/completion.bash.inc
 source $HOME/google-cloud-sdk/path.bash.inc
 gcloud version
 
+echo "param1 :${1}"
 echo $1 | base64 --decode --output ./gcloud-api-key.json
 cat ./gcloud-api-key.json
 
