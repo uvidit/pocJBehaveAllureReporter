@@ -1,4 +1,8 @@
 language: java
 
-install: mvn clean package
-script: bash start.sh $GCE_SVC_KEY
+#install: mvn clean package
+script:
+- echo $GCE_SVC_KEY
+- echo $GCE_SVC_KEY | base64 -decode -output ./gcloud-api-key.json
+- cat ./gcloud-api-key.json
+#- bash start.sh $GCE_SVC_KEY
