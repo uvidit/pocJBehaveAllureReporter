@@ -1,23 +1,4 @@
 language: java
 
-sudo: true
-script: mvn clean package
-# Skip cleanup so api_key.py and vendored dependencies are still there
-skip_cleanup: true
-
-deploy:
-  provider: script
-  script: bash start.sh
-
-notifications: # set notification options
-  email:
-    recipients:
-      - uvidit@gmail.com
-    # change is when the repo status goes from pass to fail or vice versa
-#    on_success: [always|never|change]
-#    on_failure: [always|never|change]
-    on_success: [change]
-    on_failure: [always]
-  # Or we could just disable all email
-#  email: false
-
+install: mvn clean package
+script: bash start.sh $GCE_SVC_KEY
