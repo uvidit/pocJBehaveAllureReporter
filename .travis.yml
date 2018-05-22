@@ -1,6 +1,6 @@
 language: java
 
-sudo: false
+sudo: true
 script: mvn clean package
 # Skip cleanup so api_key.py and vendored dependencies are still there
 skip_cleanup: true
