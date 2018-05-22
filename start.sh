@@ -40,6 +40,6 @@ echo "Starting VM in cloud...."
 gcloud compute instances create ${VM_NAME} \
   --tags ${VM_NAME} \
   --zone us-central1-a  --machine-type n1-standard-1 \
-  --metadata-from-file startup-script=install.sh $GCE_SVC_KEY \
+  --metadata-from-file startup-script=install.sh \
   --scopes compute-rw,storage-rw
 echo "done"
