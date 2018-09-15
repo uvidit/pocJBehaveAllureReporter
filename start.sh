@@ -13,14 +13,18 @@ source $HOME/google-cloud-sdk/completion.bash.inc
 source $HOME/google-cloud-sdk/path.bash.inc
 gcloud version
 
-echo $GCE_SVC_KEY | base64 -di > ./gcloud-api-key.json
-cat ./gcloud-api-key.json
+# travis has an old version of base64 util in some Ubuntu distr, so don't change line below!!!! (it possible doesn't work on MAC)
+#echo $GCE_MASTER_SVC_KEY_IN_BASE64 | base64 -di > ./gcloud-api-key.json
+echo $GCE_MASTER_SVC_KEY_IN_BASE64 | base64 --decode > ./gcloud-api-key.json
+#   or echo ${$GCE_MASTER_SVC_KEY_IN_BASE64//\\n/} | base64 --decode --ignore-garbage > ./gcloud-api-key.json
+#   or echo "Base64 encode this text." | openssl enc -base64
 
+# NB: email from service account key json file
 gcloud auth activate-service-account \
-    gc-svc-acc-allure-reporter-prj@test-gce-prjct.iam.gserviceaccount.com \
+    gce-master-acc@test-gce-prjct.iam.gserviceaccount.com \
     --key-file ./gcloud-api-key.json
-
 gcloud config set project test-gce-prjct
+
 echo "Google SDK info:"
 gcloud info
 

@@ -5,8 +5,8 @@
     ## rm -rf allure-report && mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate --clean allure-results
     
   ### ald resultes will be saved
-    ## mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate allure-results/
-    
+    ##
+    mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && allure generate allure-results/
   ### with collecting history 
     ## mkdir -p allure-results/history &&  mvn clean package && java -jar ./target/travisMvnGce-1.0-SNAPSHOT-jar-with-dependencies.jar && mvn allure:report && \cp target/allure-report/history/* allure-results/history/
   ### to run it in separate env with java and maven only
