@@ -1,4 +1,4 @@
-# simpleJUnitPrjct
+#  pocJBehaveAllureReporter
 
 ## to run it just exec:
   ### with removing prev report
