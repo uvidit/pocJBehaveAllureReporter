@@ -86,7 +86,7 @@ echo "  triggering TravisCI build to finalize run ...."
 curl -s -X POST -H "Content-Type: application/json" \
                 -H "Accept: application/json" \
                 -H "Travis-API-Version: 3" \
-                -H "Authorization: token 8UtpEXn3KwVdS-07AbYlmA" \
+                -H "Authorization: token 8ioPeQGS8fxsFd7mqW7pWQ" \
                 https://api.travis-ci.org/repo/uvidit%2FpocProjectDocPages/requests
 
 echo "--------------------------------------------------------"
