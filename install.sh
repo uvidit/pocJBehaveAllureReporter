@@ -43,7 +43,7 @@ gcloud version
     # MAC OS specific:
     #echo $1 | base64 --decode --output ./gcloud-api-key.json
 # Alpine OS specific:
-echo $1 | base64 -d -o ./gcloud-api-key.json
+echo $1 | base64 -d > ./gcloud-api-key.json
 
 cat ./gcloud-api-key.json # Clean it in debug!
 
@@ -92,7 +92,7 @@ curl -s -X POST -H "Content-Type: application/json" \
                 -H "Accept: application/json" \
                 -H "Travis-API-Version: 3" \
                 -H "Authorization: token 8ioPeQGS8fxsFd7mqW7pWQ" \
-                https://api.travis-ci.org/repo/uvidit%2FpocPages/requests
+                https://api.travis-ci.com/repo/uvidit%2FpocPages/requests
 
 echo "--------------------------------------------------------"
 echo " @ Saving gce log..."
