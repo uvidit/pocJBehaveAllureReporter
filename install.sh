@@ -43,7 +43,7 @@ gcloud version
     # MAC OS specific:
     #echo $1 | base64 --decode --output ./gcloud-api-key.json
 # Alpine OS specific:
-echo $1 | base64 -d > ./gcloud-api-key.json
+echo $GCE_MASTER_SVC_KEY_IN_BASE64 | base64 -d > ./gcloud-api-key.json
 
 cat ./gcloud-api-key.json # Clean it in debug!
 
