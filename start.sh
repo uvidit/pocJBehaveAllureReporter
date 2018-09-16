@@ -45,5 +45,7 @@ gcloud compute instances create ${VM_NAME} \
   --tags ${VM_NAME} \
   --zone us-central1-a  --machine-type n1-standard-1 \
   --metadata-from-file startup-script=install.sh \
+  --metadata GCE_MASTER_SVC_KEY_IN_BASE64=$GCE_MASTER_SVC_KEY_IN_BASE64 \
+  --service-account gce-master-acc@test-gce-prjct.iam.gserviceaccount.com \
   --scopes compute-rw,storage-rw
 echo "done"
