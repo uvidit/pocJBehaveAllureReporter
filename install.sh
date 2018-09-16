@@ -39,8 +39,13 @@ source ./google-cloud-sdk/completion.bash.inc
 source ./google-cloud-sdk/path.bash.inc
 gcloud version
 
+## the next to code string with BASE64 cmd is OS specific::
+    # MAC OS specific:
+    #echo $1 | base64 --decode --output ./gcloud-api-key.json
+# Alpine OS (*nix) specific:
 echo $1 | base64 --decode --output ./gcloud-api-key.json
-cat ./gcloud-api-key.json
+
+cat ./gcloud-api-key.json # Clean it in debug!
 
 gcloud auth activate-service-account \
     gce-master-acc@test-gce-prjct.iam.gserviceaccount.com \
